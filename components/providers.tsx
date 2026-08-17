@@ -15,7 +15,7 @@ const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 type LocaleContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: typeof copy.fr | typeof copy.en;
+  t: (typeof copy)[Locale];
 };
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
@@ -30,7 +30,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       const stored = JSON.parse(window.localStorage.getItem("locam-favorites") || "[]");
       if (Array.isArray(stored)) setFavorites(stored.filter((item): item is string => typeof item === "string"));
       const storedLocale = window.localStorage.getItem("locam-locale");
-      if (storedLocale === "fr" || storedLocale === "en") setLocaleState(storedLocale);
+      if (storedLocale === "fr" || storedLocale === "en" || storedLocale === "ar") setLocaleState(storedLocale);
     } catch {
       setFavorites([]);
     } finally {
@@ -42,6 +42,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     if (hydrated) window.localStorage.setItem("locam-favorites", JSON.stringify(favorites));
   }, [favorites, hydrated]);
 
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+  }, [locale]);
+
   const toggleFavorite = useCallback((reference: string) => {
     setFavorites((current) => current.includes(reference) ? current.filter((item) => item !== reference) : [...current, reference]);
   }, []);
@@ -50,6 +55,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     setLocaleState(next);
     window.localStorage.setItem("locam-locale", next);
     document.documentElement.lang = next;
+    document.documentElement.dir = next === "ar" ? "rtl" : "ltr";
   }, []);
 
   const favoritesValue = useMemo(() => ({

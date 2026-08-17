@@ -17,37 +17,47 @@ export function Header() {
   return (
     <header className="site-header">
       <div className="header-inner">
-        <a className="brand" href="/" aria-label="LOCAM — Accueil">
+        <a className="brand" href="/" aria-label={`LOCAM — ${t.home}`}>
           <strong>LOCAM</strong><span>IMMOBILIER • MAHDIA</span>
         </a>
-        <nav className="desktop-nav" aria-label="Navigation principale">
+        <nav className="desktop-nav" aria-label={t.mainNavigation}>
           {nav.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
         </nav>
         <div className="header-actions">
-          <div className="language-switch" aria-label="Langue">
+          <div className="language-switch" aria-label={t.language}>
             <button className={locale === "fr" ? "active" : ""} onClick={() => setLocale("fr")} type="button">FR</button>
             <span>/</span>
             <button className={locale === "en" ? "active" : ""} onClick={() => setLocale("en")} type="button">EN</button>
+            <span>/</span>
+            <button className={locale === "ar" ? "active" : ""} onClick={() => setLocale("ar")} type="button">AR</button>
           </div>
           <a className="icon-link favorites-link" href="/favorites" aria-label={`${t.favorites} (${hydrated ? favorites.length : 0})`}>
             <Heart size={18} /> <span>{t.favorites}</span><b>{hydrated ? favorites.length : 0}</b>
           </a>
           <a className="button button-dark header-submit" href="/proposer">{t.submit}</a>
           <a className="icon-link header-whatsapp" target="_blank" rel="noreferrer" href={createWhatsAppUrl({ message: "Bonjour LOCAM 👋\n\nJe souhaite obtenir des informations sur vos services immobiliers à Mahdia." })}><MessageCircle size={17} />{t.whatsapp}</a>
-          <button className="menu-button" onClick={() => setOpen(true)} aria-label="Ouvrir le menu" type="button"><Menu /></button>
+          <button className="menu-button" onClick={() => setOpen(true)} aria-label={t.openMenu} type="button"><Menu /></button>
         </div>
       </div>
 
       <div className={`mobile-menu ${open ? "open" : ""}`} aria-hidden={!open}>
-        <button className="mobile-close" onClick={() => setOpen(false)} aria-label="Fermer le menu" type="button"><X /></button>
+        <button className="mobile-close" onClick={() => setOpen(false)} aria-label={t.closeMenu} type="button"><X /></button>
         <a className="brand mobile-brand" href="/"><strong>LOCAM</strong><span>IMMOBILIER • MAHDIA</span></a>
-        <nav aria-label="Navigation mobile">
+        <div className="mobile-language" aria-label={t.language}>
+          <span>{t.language}</span>
+          <div>
+            <button className={locale === "fr" ? "active" : ""} onClick={() => setLocale("fr")} type="button">FR</button>
+            <button className={locale === "en" ? "active" : ""} onClick={() => setLocale("en")} type="button">EN</button>
+            <button className={locale === "ar" ? "active" : ""} onClick={() => setLocale("ar")} type="button">AR</button>
+          </div>
+        </div>
+        <nav aria-label={t.mobileNavigation}>
           {nav.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
           <a href="/favorites" onClick={() => setOpen(false)}>{t.favorites} ({hydrated ? favorites.length : 0})</a>
         </nav>
         <a className="button button-accent" href="/proposer">{t.submit}</a>
       </div>
-      {open && <button className="menu-scrim" onClick={() => setOpen(false)} aria-label="Fermer le menu" type="button" />}
+      {open && <button className="menu-scrim" onClick={() => setOpen(false)} aria-label={t.closeMenu} type="button" />}
     </header>
   );
 }
