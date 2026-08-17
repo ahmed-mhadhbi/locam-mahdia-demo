@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart, Menu, MessageCircle, X } from "lucide-react";
 import { useFavorites, useLocale } from "./providers";
 import { createWhatsAppUrl } from "../lib/whatsapp";
@@ -13,6 +13,20 @@ export function Header() {
     [t.home, "/"], [t.rent, "/properties?transaction=rent"], [t.sale, "/properties?transaction=sale"],
     [t.vacation, "/properties?transaction=vacation"], [t.properties, "/properties"], [t.contact, "/#contact"],
   ];
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
 
   return (
     <header className="site-header">
@@ -36,13 +50,15 @@ export function Header() {
           </a>
           <a className="button button-dark header-submit" href="/proposer">{t.submit}</a>
           <a className="icon-link header-whatsapp" target="_blank" rel="noreferrer" href={createWhatsAppUrl({ message: "Bonjour LOCAM 👋\n\nJe souhaite obtenir des informations sur vos services immobiliers à Mahdia." })}><MessageCircle size={17} />{t.whatsapp}</a>
-          <button className="menu-button" onClick={() => setOpen(true)} aria-label={t.openMenu} type="button"><Menu /></button>
+          <button className="menu-button" onClick={() => setOpen(true)} aria-label={t.openMenu} aria-expanded={open} aria-controls="mobile-navigation" type="button"><Menu /></button>
         </div>
       </div>
 
-      <div className={`mobile-menu ${open ? "open" : ""}`} aria-hidden={!open}>
-        <button className="mobile-close" onClick={() => setOpen(false)} aria-label={t.closeMenu} type="button"><X /></button>
-        <a className="brand mobile-brand" href="/"><strong>LOCAM</strong><span>IMMOBILIER • MAHDIA</span></a>
+      <div id="mobile-navigation" className={`mobile-menu ${open ? "open" : ""}`} aria-hidden={!open} role="dialog" aria-modal="true" aria-label={t.mobileNavigation}>
+        <div className="mobile-menu-head">
+          <a className="brand mobile-brand" href="/" onClick={() => setOpen(false)}><strong>LOCAM</strong><span>IMMOBILIER • MAHDIA</span></a>
+          <button className="mobile-close" onClick={() => setOpen(false)} aria-label={t.closeMenu} type="button"><X /></button>
+        </div>
         <div className="mobile-language" aria-label={t.language}>
           <span>{t.language}</span>
           <div>
